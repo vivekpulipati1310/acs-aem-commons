@@ -56,6 +56,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com)
 - #1684 - Useing Autocloseable when closing resourceresolvers
 - #1694 - Switch S3AssetIngestorTest and FileAssetIngestorTest back to JCR_OAK to avoid UnsupportedOperationException on MockSession.refresh().
 - #1699 - Updated MCP servlet to not serialize known types that would otherwise cause problems
+- #1730 - MCP Forms Multifield class now handles arrays correctly
 
 ### Changed
 - #1571 - Remove separate twitter bundle and use exception trapping to only register AdapterFactory when Twitter4J is available.
