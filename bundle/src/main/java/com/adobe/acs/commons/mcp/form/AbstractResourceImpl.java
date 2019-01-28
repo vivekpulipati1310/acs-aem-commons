@@ -22,6 +22,8 @@ package com.adobe.acs.commons.mcp.form;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.AbstractResource;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
@@ -32,14 +34,12 @@ import org.apache.sling.api.wrappers.ModifiableValueMapDecorator;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 
 import static com.day.cq.commons.jcr.JcrConstants.JCR_PRIMARYTYPE;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * This is a mock resource class used to pass values in to the granite UI components.
  */
 public class AbstractResourceImpl extends AbstractResource {
-    
+
     List<Resource> children;
     ResourceMetadata meta;
     ResourceResolver rr;
@@ -54,9 +54,9 @@ public class AbstractResourceImpl extends AbstractResource {
         this.type = resourceType;
         this.superType = resourceSuperType;
         this.meta = metadata;
-        meta.put(JCR_PRIMARYTYPE, type);
+        meta.put(JCR_PRIMARYTYPE, "nt:unstructured");
     }
-        
+
     @Override
     public <T> T adaptTo(Class<T> clazz) {
         if (clazz.equals(ModifiableValueMap.class)) {
@@ -71,7 +71,7 @@ public class AbstractResourceImpl extends AbstractResource {
     public void setResourceResolver(ResourceResolver rr) {
         this.rr = rr;
     }
-    
+
     public void addChild(Resource res) {
         children.add(res);
         if (res instanceof AbstractResourceImpl) {
@@ -83,7 +83,7 @@ public class AbstractResourceImpl extends AbstractResource {
             ((AbstractResourceImpl) res).setResourceResolver(rr);
         }
     }
-    
+
     public void removeChild(Resource res) {
         children.remove(res);
         if (res instanceof AbstractResourceImpl) {
@@ -104,7 +104,7 @@ public class AbstractResourceImpl extends AbstractResource {
     public Resource getParent() {
         return parent;
     }
-    
+
     @Override
     public Resource getChild(String relPath) {
         if (relPath.startsWith("/")) {
@@ -125,7 +125,7 @@ public class AbstractResourceImpl extends AbstractResource {
         }
         return current;
     }
-    
+
     public Resource getChildNamed(String name) {
         for (Resource child : getChildren()) {
             if (child.getName().equals(name)) {
@@ -134,12 +134,12 @@ public class AbstractResourceImpl extends AbstractResource {
         }
         return null;
     }
-    
+
     @Override
     public Iterable<Resource> getChildren() {
         return children;
     }
-    
+
     @Override
     public Iterator<Resource> listChildren() {
         return children.iterator();
@@ -149,7 +149,7 @@ public class AbstractResourceImpl extends AbstractResource {
     public boolean hasChildren() {
         return !children.isEmpty();
     }
-    
+
     @Override
     public boolean isResourceType(String type) {
         return getResourceType().equals(type);
@@ -158,7 +158,7 @@ public class AbstractResourceImpl extends AbstractResource {
     public void setPath(String path) {
         this.path = path;
     }
-    
+
     @Override
     public String getPath() {
         return path;
@@ -188,5 +188,4 @@ public class AbstractResourceImpl extends AbstractResource {
     public ResourceResolver getResourceResolver() {
         return rr;
     }
-    
 }

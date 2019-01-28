@@ -119,6 +119,9 @@ public class SyntheticDialogTest {
         @FormField(component = MultifieldComponent.class, name = "Multifield (simple)")
         List<String> simpleMultiField;
 
+        @FormField(component = MultifieldComponent.class, name = "Multifield (simple)")
+        String[] simpleArrayMultiField;
+
         @FormField(component = ReadonlyTextfieldComponent.class, name = "Read-only")
         String readOnly;
 

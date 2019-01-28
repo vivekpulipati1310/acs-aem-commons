@@ -42,11 +42,15 @@ public class MultifieldComponent extends FieldComponent {
 
     public void init() {
         if (getField() != null) {
-            ParameterizedType type = (ParameterizedType) getField().getGenericType();
-            Class clazz = (Class) type.getActualTypeArguments()[0];
-            extractFieldComponents(clazz);
+            if (getField().getType().isArray()) {
+                extractFieldComponents(getField().getType().getComponentType());
+            } else {
+                ParameterizedType type = (ParameterizedType) getField().getGenericType();
+                Class clazz = (Class) type.getActualTypeArguments()[0];
+                extractFieldComponents(clazz);
+            }
         }
-        if (sling != null && sling.getRequest() != null) {
+        if (sling != null) {
             setPath(sling.getRequest().getResource().getPath());
         }
     }
@@ -87,7 +91,7 @@ public class MultifieldComponent extends FieldComponent {
 
     private void extractFieldComponents(Class clazz) {
         fieldComponents = new LinkedHashMap<>();
-        if (clazz == String.class) {
+        if (clazz == String.class || clazz.isPrimitive()) {
             FieldComponent comp = new TextfieldComponent();
             FormField fieldDef = FormField.Factory.create(getName(), "", null, false, comp.getClass(), null);
             comp.setup(getName(), null, fieldDef, sling);
