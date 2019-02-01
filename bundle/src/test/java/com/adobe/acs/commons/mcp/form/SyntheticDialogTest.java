@@ -38,6 +38,7 @@ public class SyntheticDialogTest {
     public void init() {
         testPojo = new TestPojo();
         testPojo.init();
+        testPojo.getFieldComponents();
     }
 
     @Test
@@ -65,7 +66,7 @@ public class SyntheticDialogTest {
         assertNotNull(component.getFieldComponents().get("subField4"));
         assertNotNull(component.getFieldComponents().get("subField5"));
         assertNotNull(component.getFieldComponents().get("subField6"));
-        assertTrue(component.isComposite);
+        assertTrue(component.isComposite());
         AbstractResourceImpl res = (AbstractResourceImpl) component.buildComponentResource();
         assertNotNull(res);
         assertEquals("/test/path", res.getPath());
@@ -83,7 +84,7 @@ public class SyntheticDialogTest {
     public void testSimpleMultifieldComponentGeneration() {
         MultifieldComponent component = (MultifieldComponent) testPojo.getFieldComponents().get("simpleMultiField");
         component.setPath("/test/path");
-        assertFalse(component.isComposite);
+        assertFalse(component.isComposite());
         AbstractResourceImpl res = (AbstractResourceImpl) component.buildComponentResource();
         assertNotNull(res);
         assertEquals("/test/path", res.getPath());

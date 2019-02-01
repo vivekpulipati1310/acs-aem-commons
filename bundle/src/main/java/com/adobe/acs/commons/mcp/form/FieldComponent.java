@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -94,7 +95,11 @@ public abstract class FieldComponent {
 
     private Resource getComponentResource() {
         if (resource == null) {
+            purgeEmptyMetadata();
             resource = buildComponentResource();
+            if (resource instanceof AbstractResourceImpl && sling != null) {
+                ((AbstractResourceImpl) resource).setResourceResolver(sling.getRequest().getResourceResolver());
+            }
         }
         return resource;
     }
@@ -175,6 +180,20 @@ public abstract class FieldComponent {
         this.resourceSuperType = resourceSuperType;
     }
 
+    public void purgeEmptyMetadata() {
+        Set<String> emptyKeys = new HashSet<>();
+        componentMetadata.forEach((key, value) -> {
+            if (value == null || "".equals(value)) {
+                emptyKeys.add(key);
+            }
+        });
+        componentMetadata.keySet().removeAll(emptyKeys);
+    }
+
+    public void setSlingHelper(SlingScriptHelper helper) {
+        this.sling = helper;
+    }
+
     /**
      * @return the name
      */
@@ -183,15 +202,23 @@ public abstract class FieldComponent {
     }
 
     public boolean hasOption(String optionName) {
-        return Stream.of(formField.options())
-                .filter(s -> s.equalsIgnoreCase(optionName) || s.startsWith(optionName + "="))
-                .findFirst().isPresent();
+        if (formField == null || formField.options() == null) {
+            return false;
+        } else {
+            return Stream.of(formField.options())
+                    .filter(s -> s.equalsIgnoreCase(optionName) || s.startsWith(optionName + "="))
+                    .findFirst().isPresent();
+        }
     }
 
     public Optional<String> getOption(String option) {
-        return Stream.of(formField.options())
-                .filter(s -> s.startsWith(option + "="))
-                .findFirst().map(o -> o.split("=")[1]);
+        if (formField == null || formField.options() == null) {
+            return Optional.empty();
+        } else {
+            return Stream.of(formField.options())
+                    .filter(s -> s.startsWith(option + "="))
+                    .findFirst().map(o -> o.split("=")[1]);
+        }
     }
 
     public static enum ClientLibraryType {

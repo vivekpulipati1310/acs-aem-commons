@@ -70,6 +70,7 @@ public class AbstractResourceImpl extends AbstractResource {
 
     public void setResourceResolver(ResourceResolver rr) {
         this.rr = rr;
+        children.forEach(r -> ((AbstractResourceImpl) r).setResourceResolver(rr));
     }
 
     public void addChild(Resource res) {
