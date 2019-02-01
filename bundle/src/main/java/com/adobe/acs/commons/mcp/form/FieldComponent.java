@@ -19,6 +19,7 @@
  */
 package com.adobe.acs.commons.mcp.form;
 
+import com.adobe.acs.commons.data.Variant;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -112,8 +113,9 @@ public abstract class FieldComponent {
      * @return
      */
     public Resource buildComponentResource() {
+        purgeEmptyMetadata();
         AbstractResourceImpl res = new AbstractResourceImpl(path, resourceType, resourceSuperType, componentMetadata);
-        if (sling != null && sling.getRequest() != null) {
+        if (sling != null) {
             res.setResourceResolver(sling.getRequest().getResourceResolver());
         }
         return res;
@@ -219,6 +221,10 @@ public abstract class FieldComponent {
                     .filter(s -> s.startsWith(option + "="))
                     .findFirst().map(o -> o.split("=")[1]);
         }
+    }
+
+    public Optional<Boolean> getBooleanOption(String option) {
+        return getOption(option).map(s -> Variant.convert(s, Boolean.class));
     }
 
     public static enum ClientLibraryType {

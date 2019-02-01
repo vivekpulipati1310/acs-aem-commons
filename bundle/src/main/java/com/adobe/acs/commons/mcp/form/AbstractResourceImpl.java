@@ -81,7 +81,7 @@ public class AbstractResourceImpl extends AbstractResource {
             if (!child.path.startsWith("/")) {
                 child.path = path + "/" + child.path;
             }
-            ((AbstractResourceImpl) res).setResourceResolver(rr);
+            child.setResourceResolver(rr);
         }
     }
 
