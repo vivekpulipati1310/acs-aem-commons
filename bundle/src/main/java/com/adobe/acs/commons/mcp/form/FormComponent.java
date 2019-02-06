@@ -46,7 +46,7 @@ public class FormComponent extends AbstractContainerComponent {
     private boolean async = false;
     private String autocomplete = "";
     private boolean autosubmitForm = false;
-    private String dataPath = "./";
+    private String dataPath = null;
     private String enctype = "multipart/form-data";
     private boolean foundationForm = true;
     private boolean loadingMask = true;
@@ -104,6 +104,7 @@ public class FormComponent extends AbstractContainerComponent {
 
     @Override
     public Resource buildComponentResource() {
+        initOptions();
         ResourceMetadata meta = getComponentMetadata();
         meta.put(ACTION, getAction());
         meta.put(ASYNC, isAsync());
