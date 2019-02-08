@@ -60,20 +60,14 @@ public class FormComponent extends AbstractContainerComponent {
     private String target = "";
     private String ui = "";
 
-    FieldsetComponent fields;
-
     public FormComponent() {
         setResourceType("granite/ui/components/coral/foundation/form");
-        fields = new FieldsetComponent();
-        super.addComponent("fields", fields);
         super.addComponent("submit", generateFormActions());
     }
 
     @Override
     public void init() {
         super.init();
-        fields.init();
-        fields.setPath(getPath() + "/items/fields");
     }
 
     private void initOptions() {
@@ -130,13 +124,8 @@ public class FormComponent extends AbstractContainerComponent {
             res.setResourceResolver(sling.getRequest().getResourceResolver());
         }
 
-        res.addChild(generateItemsResource(getPath() + "/items"));
+        res.addChild(generateItemsResource(getPath() + "/items", true));
         return res;
-    }
-
-    @Override
-    public void addComponent(String name, FieldComponent field) {
-        fields.addComponent(name, field);
     }
 
     /**

@@ -18,13 +18,11 @@ package com.adobe.acs.commons.mcp.form;
 import org.apache.sling.api.resource.Resource;
 
 /**
- * Wrap a field set (section) component
+ * Wrap a field set (section) component which is similar to container but also has a class attribute
  */
-public class FieldsetComponent extends AbstractContainerComponent {
-    private static final String JCR_TITLE = "jcr:title";
+public class FieldsetComponent extends ContainerComponent {
     private static final String CLASS = "class";
 
-    private String title;
     private String cssClass;
 
     public FieldsetComponent() {
@@ -34,36 +32,13 @@ public class FieldsetComponent extends AbstractContainerComponent {
     @Override
     public void init() {
         super.init();
-        if (getTitle() == null) {
-            getOption(JCR_TITLE).ifPresent(this::setTitle);
-        }
         getOption(CLASS).ifPresent(this::setCssClass);
     }
 
     @Override
     public Resource buildComponentResource() {
-        getComponentMetadata().put(JCR_TITLE, getTitle());
         getComponentMetadata().put(CLASS, getClass());
-        AbstractResourceImpl res = new AbstractResourceImpl(getPath(), getResourceType(), getResourceSuperType(), getComponentMetadata());
-        if (sling != null) {
-            res.setResourceResolver(sling.getRequest().getResourceResolver());
-        }
-        res.addChild(generateItemsResource(getPath() + "/items"));
-        return res;
-    }
-
-    /**
-     * @return the title
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * @param title the title to set
-     */
-    public void setTitle(String title) {
-        this.title = title;
+        return super.buildComponentResource();
     }
 
     /**

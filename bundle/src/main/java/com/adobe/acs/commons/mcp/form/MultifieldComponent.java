@@ -45,7 +45,7 @@ public class MultifieldComponent extends AbstractContainerComponent {
             // The container component is what sets the name, not the base component
             field.getResourceMetadata().put("name", getName());
             res.addChild(field);
-            AbstractResourceImpl items = generateItemsResource(getPath() + "/field");
+            AbstractResourceImpl items = generateItemsResource(getPath() + "/field", true);
             field.addChild(items);
         } else {
             for (FieldComponent component : fieldComponents.values()) {

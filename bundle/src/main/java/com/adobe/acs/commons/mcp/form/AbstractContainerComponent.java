@@ -21,6 +21,7 @@ package com.adobe.acs.commons.mcp.form;
 
 import com.adobe.acs.commons.mcp.util.AnnotatedFieldDeserializer;
 import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.apache.sling.api.resource.Resource;
@@ -34,14 +35,17 @@ public class AbstractContainerComponent extends FieldComponent {
     Map<String, FieldComponent> fieldComponents = new LinkedHashMap<>();
     private boolean composite;
 
+    @Override
     public void init() {
         if (getField() != null) {
             if (getField().getType().isArray()) {
                 extractFieldComponents(getField().getType().getComponentType());
-            } else {
+            } else if (Collection.class.isAssignableFrom(getField().getType())) {
                 ParameterizedType type = (ParameterizedType) getField().getGenericType();
                 Class clazz = (Class) type.getActualTypeArguments()[0];
                 extractFieldComponents(clazz);
+            } else {
+                extractFieldComponents(getField().getType());
             }
         }
         if (sling != null) {
@@ -63,7 +67,7 @@ public class AbstractContainerComponent extends FieldComponent {
             addComponent(getName(), comp);
             composite = false;
         } else {
-            AnnotatedFieldDeserializer.getFormFields(clazz, sling).forEach((name,component)->addComponent(name,component));
+            AnnotatedFieldDeserializer.getFormFields(clazz, sling).forEach((name, component) -> addComponent(name, component));
             composite = true;
         }
         fieldComponents.values().forEach(this::addClientLibraries);
@@ -74,15 +78,23 @@ public class AbstractContainerComponent extends FieldComponent {
         addClientLibraries(field);
     }
 
-    protected AbstractResourceImpl generateItemsResource(String path) {
-        AbstractResourceImpl items = new AbstractResourceImpl(path + "/items" , "", "", new ResourceMetadata());
-        for (FieldComponent component : fieldComponents.values()) {
-            if (sling != null) {
-                component.setSlingHelper(sling);
+    protected AbstractResourceImpl generateItemsResource(String path, boolean useFieldSet) {
+        AbstractResourceImpl items = new AbstractResourceImpl(path + "/items", "", "", new ResourceMetadata());
+        if (useFieldSet) {
+            FieldsetComponent fieldset = new FieldsetComponent();
+            fieldComponents.forEach((name, comp) -> fieldset.addComponent(name, comp));
+            fieldset.setPath(path + "/fields");
+            fieldset.sling = getHelper();
+            items.addChild(fieldset.buildComponentResource());
+        } else {
+            for (FieldComponent component : fieldComponents.values()) {
+                if (sling != null) {
+                    component.setSlingHelper(sling);
+                }
+                component.setPath(path + "/items/" + component.getName());
+                Resource child = component.buildComponentResource();
+                items.addChild(child);
             }
-            component.setPath(path + "/items/" + component.getName());
-            Resource child = component.buildComponentResource();
-            items.addChild(child);
         }
         if (sling != null) {
             items.setResourceResolver(sling.getRequest().getResourceResolver());
